@@ -1,0 +1,488 @@
+# status.toml — v0 對齊板的資料源(rows-as-data)。改這裡,跑
+# `python3 experiments/gen_status.py` 重生 docs/status.html;review 看這份 diff。
+# 狀態詞彙(req.status):delivered(repo 有且驗過)/ spec-only(合約在、跑不起來)/
+# planned(有工作項認領、尚無實物)/ gap(spec 包交付時無人認領,本板新增工作項)/ policy。
+schema_version = 1
+as_of = "2026-08-20"
+deadline = "2026-10-05"     # C15 build window
+source = "docs/requirements-v1.6.html"
+north_star = "入職 Etched 後常態週工時中位數 ≤ 8 小時/天;系統產品是 attention allocation。"
+v0_acceptance = "Claude Code session 結束或 pre-push 後幾分鐘,帶 requirement↔span 矩陣與 risk ranking 的 dossier 自動出現在通知裡;文字保證無 script 漏字。"
+hours_note = "人時為 Withers 手寫估;若由 Claude Code 實作,Withers 端換算成 review 時數約 1/3。"
+
+# ---- 待你拍板(鏡像 NOW.md Blocked-on;改動以 NOW.md 為準) ----
+[[decision]]
+id = "D1"
+text = "協作模式:task 由 Claude Code 實作、你審(repo CLAUDE.md 合約生效),還是 Mode A 你手寫 Rust?"
+bites = "決定 W2–W6 誰動手;也決定下方人時欄怎麼讀。"
+
+[[decision]]
+id = "D2"
+text = "task 順序:rows-as-data generator(W10)排到 worker 之後?"
+bites = "它不在 v0 閉環關鍵路徑上;剩餘 46 天只夠 v0。"
+
+[[decision]]
+id = "D3"
+text = "C15 的「v1 核心」指哪些 ID?建議 = I14(macOS 跑得起來)+ B2(Tier 0 triage 收編,已有原型),其餘 v1 入職後按 C14 解鎖。"
+bites = "沒定義就無法判斷 10-05 前算不算達標;估時顯示 v0 本身已吃掉全部剩餘時間。"
+
+# ---- 工作項(W):v0 閉環的施工順序。issue = GitHub issue 編號,0 = 尚未開 ----
+[[work]]
+id = "W0"
+title = "SessionEnd hook 上線"
+status = "next"
+hours = 2
+covers = ["L1", "I1", "A8"]
+depends = []
+issue = 0
+note = "先對官方 hooks docs 校對 settings fragment 欄位名,再裝 ~/.local/bin + 併 ~/.claude/settings.json;沒 worker 也無害,queue 積壓就是 W2 測資。"
+
+[[work]]
+id = "W1"
+title = "pre-push 觸發"
+status = "todo"
+hours = 1
+covers = ["A8"]
+depends = ["W0"]
+issue = 0
+new = true
+note = "spec 包只有 SessionEnd hook;A8 v0 明寫 pre-push 也走本地 worker。git pre-push hook 寫 trigger=pre_push job,可用 core.hooksPath 全域裝。"
+
+[[work]]
+id = "W2"
+title = "review-worker 骨架(Rust):drain / debounce / 禮讓"
+status = "todo"
+hours = 12
+covers = ["I2", "I3", "I9", "P1"]
+depends = ["W0"]
+issue = 0
+note = "Cargo workspace、--drain 讀 queue、per-branch debounce(最新 HEAD 勝)、併發=1 + 一鍵暫停(I9)、每 job 一行 log;systemd units 在 host 實驗;NOW.md worktree 表由它產。"
+
+[[work]]
+id = "W3"
+title = "Tier 0:diff → hunk → enclosing symbol(tree-sitter)→ 一跳 caller/callee"
+status = "todo"
+hours = 20
+covers = ["A1", "A2", "C4", "C5"]
+depends = ["W2"]
+issue = 0
+note = "v0 最難的 deterministic 部分,目前零原型(experiments/triage.py 是 B 線的 issue triage,不是這個)。merge-base 自動偵測、cache key = commit。Rust 先行。"
+
+[[work]]
+id = "W4"
+title = "LLM backend trait + claude -p impl + validator"
+status = "todo"
+hours = 16
+covers = ["I7", "I5", "C1", "C2", "C5", "C6", "A3", "A4", "C8"]
+depends = ["W3"]
+issue = 0
+note = "先查 claude -p 官方 flags(Q6 留的尾巴:--output-format、--model、schema 強制)。I7 trait 一個 impl;C2 validator:span 存在、symbol 在 span 內、retry 一次、degraded 統計;A4 risk 規則表資料化成檔案(目前只有 schema enum)。"
+
+[[work]]
+id = "W5"
+title = "S2 lint(Rust)+ S5 pipeline 接點"
+status = "todo"
+hours = 10
+covers = ["S2", "S5", "C9"]
+depends = ["W2"]
+issue = 0
+note = "README 有列、NOW.md task 列表漏了。Unicode script 白名單掃描、OpenCC s2twp diff、banned map;只過 JSON 的 prose 欄位。"
+
+[[work]]
+id = "W6"
+title = "Renderer + 送達:單檔 HTML dossier、degraded banner、notify"
+status = "todo"
+hours = 16
+covers = ["A7", "A9", "A3", "C3", "C8", "D1", "D4"]
+depends = ["W4", "W5"]
+issue = 0
+note = "Gruvbox dark 單檔;code 從真實 checkout 取(C3);A9 素樸 LOC 預算警告;notify-send / osascript adapter,degraded 同通道可辨。"
+
+[[work]]
+id = "W7"
+title = "Session ledger(L2)"
+status = "todo"
+hours = 6
+covers = ["L2", "A1"]
+depends = ["W0"]
+issue = 0
+new = true
+note = "v0 範圍但 spec 包沒寫:hook 只寫 job spec,沒人產 intent / 聲稱 invariant / touched files / tests。來源待定(SessionEnd 是否拿得到 transcript 路徑),先補一節 spec 再做。"
+
+[[work]]
+id = "W8"
+title = "合約強制 hooks(G1 commit 粒度 / G2 doc 長度)"
+status = "todo"
+hours = 3
+covers = ["G1", "G2"]
+depends = []
+issue = 0
+new = true
+note = "CLAUDE.md 只讓模型「知道」;G1/G2 各要一個 hook 當 floor(commit-msg / 行數、doc 行數 lint)。"
+
+[[work]]
+id = "W9"
+title = "Repo 衛生:P2 decisions log、U2 failure-map 落點、K1 進 CLAUDE.md"
+status = "todo"
+hours = 2
+covers = ["P2", "U2", "K1"]
+depends = []
+issue = 0
+new = true
+note = "docs/decisions.md 建檔並 seed Q1/Q2/Q3/Q6;docs/failure-map.md 模板(你寫、我驗);CLAUDE.md 補 K1(task-blocking 答案 ≤ 10 行)。"
+
+[[work]]
+id = "W10"
+title = "rows-as-data generator(requirements v1.6 → data + generated view)"
+status = "deferred"
+hours = 10
+covers = []
+depends = []
+issue = 0
+note = "原 NOW.md task 1;本板的 gen_status.py 是它的種子。建議排在 W6 之後(D2)。"
+
+[[work]]
+id = "W11"
+title = "hub serving(tailnet 靜態 serve + ntfy)"
+status = "deferred"
+hours = 8
+covers = []
+depends = ["W6"]
+issue = 0
+note = "原 NOW.md task 3;I15/D7 屬 v1。"
+
+# ---- v0 需求覆蓋(35 條 + 11 條政策)。evidence = repo 路徑;gap = 還缺什麼 ----
+[[req]]
+id = "C1"
+title = "Claims-with-spans:所有 LLM 產出為結構化 JSON,claim 必附 span"
+status = "spec-only"
+evidence = "spec/schemas/claims.schema.json"
+covered_by = ["W4"]
+
+[[req]]
+id = "C2"
+title = "Validator:span 存在於 commit、symbol 在 span 內;retry 一次再丟"
+status = "planned"
+evidence = "規則寫在 claims.schema.json description"
+covered_by = ["W4"]
+
+[[req]]
+id = "C3"
+title = "LLM 指不抄:renderer 從真實 checkout 取 code"
+status = "planned"
+evidence = "spec/prompts/tier1-dossier.md 規則 6"
+covered_by = ["W6"]
+
+[[req]]
+id = "C4"
+title = "Deterministic skeleton:節點與邊由 tree-sitter / git 產,LLM 不加邊"
+status = "planned"
+evidence = ""
+covered_by = ["W3"]
+gap = "零原型;v0 技術風險最高的一條。"
+
+[[req]]
+id = "C5"
+title = "兩層 cache:deterministic key = commit;LLM key = (diff, inputs, prompt ver)"
+status = "planned"
+evidence = ""
+covered_by = ["W3", "W4"]
+
+[[req]]
+id = "C6"
+title = "Model tiering:抽取 / lint 用 Haiku 級,mapping 上大模型"
+status = "planned"
+evidence = ""
+covered_by = ["W4"]
+gap = "claude -p 能否指定模型待查官方文件。"
+
+[[req]]
+id = "C8"
+title = "失敗顯性化:degraded banner + notify,禁渲染半空產物"
+status = "planned"
+evidence = ""
+covered_by = ["W4", "W6"]
+
+[[req]]
+id = "C9"
+title = "Style guard 前置:prose 進 renderer 前必經 lint"
+status = "planned"
+evidence = ""
+covered_by = ["W5"]
+
+[[req]]
+id = "G1"
+title = "Reviewable series:小 commit、intent message;超 budget 先提切分"
+status = "spec-only"
+evidence = "CLAUDE.md(合約);hook 驗證未做"
+covered_by = ["W8"]
+
+[[req]]
+id = "G2"
+title = "產出預算:doc 行數 budget、答案先行;code 每 commit 行數 budget"
+status = "spec-only"
+evidence = "CLAUDE.md(80 行 / 300 行);lint hook 未做"
+covered_by = ["W8"]
+
+[[req]]
+id = "G3"
+title = "Agent-legible = reviewer-legible 的 code 合約"
+status = "delivered"
+evidence = "CLAUDE.md Code 段"
+covered_by = []
+
+[[req]]
+id = "A1"
+title = "輸入 = branch diff + issue;來源 ledger → branch 命名 → 手動;缺 issue 顯性降級"
+status = "planned"
+evidence = "install/hooks/enqueue-session.sh 已抽 branch issue ref"
+covered_by = ["W3", "W7"]
+
+[[req]]
+id = "A2"
+title = "Diff → symbol mapping + 一跳 caller/callee scoped subgraph"
+status = "planned"
+evidence = ""
+covered_by = ["W3"]
+gap = "同 C4:零原型。"
+
+[[req]]
+id = "A3"
+title = "Requirement ↔ span 雙向矩陣,gap 與 unmapped hunk 排最前"
+status = "spec-only"
+evidence = "claims.schema.json 的 req_impl / gap / scope_creep"
+covered_by = ["W4", "W6"]
+
+[[req]]
+id = "A4"
+title = "Risk ranking:規則表資料化,加權排序 hunks"
+status = "spec-only"
+evidence = "claims.schema.json risk_tags enum"
+covered_by = ["W4"]
+gap = "規則表檔案不存在,只有 enum 六個詞。"
+
+[[req]]
+id = "A7"
+title = "單檔 HTML dossier,Gruvbox dark,離線可開"
+status = "planned"
+evidence = ""
+covered_by = ["W6"]
+
+[[req]]
+id = "A8"
+title = "觸發:SessionEnd 與 pre-push 走本地 worker"
+status = "spec-only"
+evidence = "SessionEnd hook 有;pre-push 沒有"
+covered_by = ["W0", "W1"]
+gap = "pre-push 觸發無人認領 → W1。"
+
+[[req]]
+id = "A9"
+title = "Review budget 顯示(v0 素樸 LOC,> 400 警告)"
+status = "planned"
+evidence = ""
+covered_by = ["W6"]
+
+[[req]]
+id = "L1"
+title = "SessionEnd hook 只 enqueue,< 1s,不跑 LLM"
+status = "delivered"
+evidence = "install/hooks/enqueue-session.sh(容器內驗過;host 未裝)"
+covered_by = ["W0"]
+
+[[req]]
+id = "L2"
+title = "Ledger:intent、聲稱 invariant、touched files、tests,per-branch"
+status = "gap"
+evidence = ""
+covered_by = ["W7"]
+gap = "spec 包沒寫、NOW.md 沒列;hook 不產 ledger。"
+
+[[req]]
+id = "S1"
+title = "style.toml 單一資料源"
+status = "delivered"
+evidence = "style.toml"
+covered_by = []
+
+[[req]]
+id = "S2"
+title = "Lint:script 掃描、OpenCC s2twp diff、banned map"
+status = "planned"
+evidence = ""
+covered_by = ["W5"]
+gap = "NOW.md task 列表漏列(README 有)。"
+
+[[req]]
+id = "S5"
+title = "Pipeline 接點:renderer 前只過 prose 欄位"
+status = "planned"
+evidence = ""
+covered_by = ["W5"]
+
+[[req]]
+id = "I1"
+title = "Job spec JSON schema + queue dir 慣例,tmp+rename"
+status = "delivered"
+evidence = "spec/schemas/job-spec.schema.json;hook 寫入路徑"
+covered_by = ["W0"]
+
+[[req]]
+id = "I2"
+title = "Worker 啟動層:systemd --user path unit / launchd WatchPaths"
+status = "spec-only"
+evidence = "install/systemd/、install/launchd/"
+covered_by = ["W2"]
+gap = "host 未驗;binary 不存在。"
+
+[[req]]
+id = "I3"
+title = "Debounce:同 branch 只跑最新 HEAD"
+status = "planned"
+evidence = ""
+covered_by = ["W2"]
+
+[[req]]
+id = "I5"
+title = "Prompt / schema 版本化 → cache key 失效"
+status = "spec-only"
+evidence = "spec/prompts/* 檔頭 prompt_version"
+covered_by = ["W4"]
+
+[[req]]
+id = "I7"
+title = "LLM backend 抽象:trait + claude -p impl"
+status = "planned"
+evidence = ""
+covered_by = ["W4"]
+gap = "claude -p flags 未查官方文件(Q6 留)。"
+
+[[req]]
+id = "I9"
+title = "Subscription 禮讓:併發 1、window 上限、一鍵暫停、離峰"
+status = "planned"
+evidence = ""
+covered_by = ["W2"]
+
+[[req]]
+id = "D1"
+title = "本地送達:固定路徑 + notify adapter"
+status = "planned"
+evidence = ""
+covered_by = ["W6"]
+
+[[req]]
+id = "D4"
+title = "Degraded 通知同通道、視覺可辨"
+status = "planned"
+evidence = ""
+covered_by = ["W6"]
+
+[[req]]
+id = "P1"
+title = "NOW.md rolling state,60 行 budget;worktree 表機器產"
+status = "delivered"
+evidence = "NOW.md(手動版);worktree 表待 W2"
+covered_by = ["W2"]
+
+[[req]]
+id = "P2"
+title = "Append-only decisions / incidents log"
+status = "gap"
+evidence = ""
+covered_by = ["W9"]
+gap = "檔案不存在。"
+
+[[req]]
+id = "P6"
+title = "Pending-on-you 集中 NOW.md Blocked-on"
+status = "delivered"
+evidence = "NOW.md"
+covered_by = []
+
+[[req]]
+id = "U2"
+title = "Failure map:你憑記憶寫、Claude 逐條驗"
+status = "gap"
+evidence = ""
+covered_by = ["W9"]
+gap = "沒模板、沒落點。"
+
+[[req]]
+id = "C10"
+title = "寫回分級:機械送達直接開,LLM 判斷型先試用,永不 auto-merge"
+status = "policy"
+evidence = "宣告生效"
+covered_by = []
+
+[[req]]
+id = "C11"
+title = "Untrusted input:外部文字只是資料,執行只在 sandbox"
+status = "policy"
+evidence = "宣告生效"
+covered_by = []
+
+[[req]]
+id = "C14"
+title = "解鎖判準:v1+ 每條須答痛點 + 省多少;四週未用即刪"
+status = "policy"
+evidence = "宣告生效"
+covered_by = []
+
+[[req]]
+id = "C15"
+title = "Build window:v0 + v1 核心於 2026-10-05 前;入職後 90 天只當使用者"
+status = "policy"
+evidence = "宣告生效"
+covered_by = []
+gap = "「v1 核心」未定義 → D3。"
+
+[[req]]
+id = "G4"
+title = "Delegation routing:熟 + blast radius 大 → 手寫;外圍 → agent"
+status = "policy"
+evidence = "宣告生效"
+covered_by = []
+
+[[req]]
+id = "G5"
+title = "Next-action 合約:結尾只列真決策 ≤ 3"
+status = "policy"
+evidence = "CLAUDE.md G5 段"
+covered_by = []
+
+[[req]]
+id = "L4"
+title = "Stop hook 不觸發 pipeline,只給 style lint"
+status = "policy"
+evidence = "settings-fragment 只掛 SessionEnd"
+covered_by = []
+
+[[req]]
+id = "S7"
+title = "Linter 乾淨即沉默,永不 nag"
+status = "policy"
+evidence = "宣告生效"
+covered_by = []
+
+[[req]]
+id = "H4"
+title = "不做 per-issue auto card / whiteboard 自動擺放"
+status = "policy"
+evidence = "宣告生效"
+covered_by = []
+
+[[req]]
+id = "U1"
+title = "Done 定義分層:load-bearing = 證據 + 預測考核"
+status = "policy"
+evidence = "宣告生效"
+covered_by = []
+
+[[req]]
+id = "K1"
+title = "問題分流:task-blocking 答案 ≤ 10 行,知識型彈射"
+status = "policy"
+evidence = ""
+covered_by = ["W9"]
+gap = "CLAUDE.md 沒有這條。"

@@ -8,7 +8,9 @@ risk ranking 的 dossier 自動出現在通知裡;自動化的是理解,判斷�
 - `CLAUDE.md` — G1–G5 輸出合約種子,對本 repo 與所有被 review 的 repo 生效。
 - `NOW.md` — P1 rolling state:Blocked-on(you)/ Now / Next。唯一的待決事項落點(P6)。
 - `style.toml` — S1 資料源;S8 名人堂真實樣本。
-- `docs/` — `requirements-v1.6.html`(規格本體)、`USAGE.md`(從使用者座位看 workflow)。
+- `docs/` — `requirements-v1.6.html`(規格本體)、`USAGE.md`(從使用者座位看 workflow)、
+  `status.html`(v0 對齊板:待決、工作項、需求覆蓋與缺口;資料在 `status.toml`,
+  改完跑 `experiments/gen_status.py` 重生)。
 - `spec/` — 程式會直接消費的合約:`schemas/`(job-spec、claims、brief)、
   `prompts/`(tier1-dossier、tier1-brief;prompt_version 在檔頭,改即 bump,I5)、
   `NOW.template.md`。
