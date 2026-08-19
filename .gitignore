@@ -1,0 +1,12 @@
+# Rust
+/target/
+/crates/**/target/
+# Python experiments
+__pycache__/
+*.pyc
+# triage.py --payload scratch output
+*.payload.json
+# editors
+.idea/
+.vscode/
+*.swp
