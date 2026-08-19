@@ -1,0 +1,91 @@
+/* status.css — Gruvbox Material dark, single theme on purpose (A7/D5: dossier 與閱讀面同一套視覺)。
+   所有顏色都從 token 來;狀態色五個固定,accent(橘)只給 eyebrow 與連結。 */
+:root {
+  --bg: #282828; --bg1: #32302f; --bg2: #3c3836; --line: #5a524c;
+  --fg: #d4be98; --fg-strong: #ddc7a1; --fg-dim: #a89984; --fg-muted: #928374;
+  --accent: #e78a4e;
+  --ok: #a9b665; --warn: #d8a657; --plan: #7daea3; --gap: #ea6962; --pol: #928374;
+  --next: #d3869b;
+  --sans: "IBM Plex Sans", system-ui, "Noto Sans CJK TC", "PingFang TC", "Microsoft JhengHei", sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+* { box-sizing: border-box; }
+html { background: var(--bg); }
+body { margin: 0; background: var(--bg); color: var(--fg); font-family: var(--sans);
+       font-size: 15px; line-height: 1.55; -webkit-font-smoothing: antialiased; }
+main { max-width: 1080px; margin: 0 auto; padding: 40px 28px 72px; display: grid; gap: 40px; }
+main > * { min-width: 0; }  /* grid items default to min-width:auto; the matrix's min-width would widen the page */
+a { color: var(--accent); text-decoration: none; border-bottom: 1px solid #e78a4e66; }
+a:hover, a:focus-visible { border-bottom-color: var(--accent); outline: none; }
+code { font-family: var(--mono); font-size: 0.9em; color: var(--fg-strong); }
+b { color: var(--fg-strong); font-weight: 600; }
+
+header { display: grid; gap: 10px; }
+h1 { margin: 0; font-size: 30px; font-weight: 600; color: var(--fg-strong); text-wrap: balance; }
+h2 { margin: 0 0 14px; }
+.eyebrow { margin: 0; font-family: var(--mono); font-size: 12px; font-weight: 500;
+           letter-spacing: .12em; text-transform: uppercase; color: var(--accent); }
+.lede { margin: 0; max-width: 72ch; }
+.stamp { margin: 4px 0 0; font-size: 13px; color: var(--fg-muted); }
+.note { margin: 0 0 14px; font-size: 13px; color: var(--fg-dim); }
+.dim { color: var(--fg-muted); }
+
+/* KPI tiles — bare stat tiles, no plot */
+.kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+.tile { background: var(--bg1); border: 1px solid var(--line); border-radius: 4px; padding: 14px 16px; }
+.tile .num { font-family: var(--mono); font-size: 34px; font-weight: 500; line-height: 1;
+             color: var(--fg-strong); font-variant-numeric: tabular-nums; }
+.tile .num small { font-size: 16px; color: var(--fg-muted); margin-left: 2px; }
+.tile .label { margin-top: 8px; font-size: 13px; color: var(--fg); }
+.tile .sub { margin-top: 2px; font-size: 12px; color: var(--fg-muted); }
+
+/* decisions */
+.decisions { margin: 0; padding-left: 0; list-style: none; display: grid; gap: 10px; }
+.decisions li { background: var(--bg1); border-left: 3px solid var(--next); padding: 10px 14px; }
+.bites { margin-top: 4px; font-size: 13px; color: var(--fg-dim); }
+
+/* chips & pills */
+.chip { display: inline-block; font-family: var(--mono); font-size: 12px; padding: 0 6px;
+        border: 1px solid var(--line); border-radius: 3px; color: var(--fg-strong);
+        margin-right: 4px; line-height: 1.6; }
+.pill { display: inline-block; font-family: var(--mono); font-size: 11.5px; font-weight: 500;
+        padding: 1px 8px; border-radius: 3px; border: 1px solid; white-space: nowrap; }
+.pill-delivered, .pill-w-done { color: var(--ok); border-color: #a9b66599; background: #a9b66518; }
+.pill-spec-only, .pill-w-doing { color: var(--warn); border-color: #d8a65799; background: #d8a65718; }
+.pill-planned { color: var(--plan); border-color: #7daea399; background: #7daea318; }
+.pill-gap { color: var(--gap); border-color: #ea696299; background: #ea696218; }
+.pill-policy, .pill-w-todo, .pill-w-deferred { color: var(--pol); border-color: #92837499; background: #92837414; }
+.pill-w-next { color: var(--next); border-color: #d3869b99; background: #d3869b18; }
+
+/* work items */
+.work { display: grid; gap: 8px; }
+.row { background: var(--bg1); border: 1px solid var(--line); border-radius: 4px; padding: 10px 14px 12px; }
+.row.w-next { border-color: #d3869b99; }
+.row.w-deferred { opacity: .7; }
+.head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 10px; }
+.wid { font-family: var(--mono); font-size: 13px; color: var(--accent); min-width: 2.6em; }
+.title { font-weight: 600; color: var(--fg-strong); flex: 1 1 24ch; }
+.hours { font-family: var(--mono); font-size: 13px; color: var(--fg-dim); font-variant-numeric: tabular-nums; }
+.issue { font-family: var(--mono); font-size: 13px; }
+.meta { margin-top: 6px; font-size: 13px; color: var(--fg-dim); }
+.wnote { margin-top: 4px; font-size: 13.5px; max-width: 90ch; }
+
+/* requirement matrix */
+.scroll { overflow-x: auto; border: 1px solid var(--line); border-radius: 4px; }
+table { border-collapse: collapse; width: 100%; min-width: 760px; font-size: 13.5px; }
+th { text-align: left; font-family: var(--mono); font-size: 11.5px; font-weight: 500;
+     letter-spacing: .08em; text-transform: uppercase; color: var(--fg-muted);
+     background: var(--bg1); padding: 8px 10px; border-bottom: 1px solid var(--line); }
+td { padding: 7px 10px; border-bottom: 1px solid #5a524c55; vertical-align: top; }
+tr:last-child td { border-bottom: 0; }
+tr.s-gap td { background: #ea696210; }
+.rid { font-family: var(--mono); color: var(--fg-strong); white-space: nowrap; }
+.ev { color: var(--fg-dim); max-width: 34ch; }
+.gap { color: var(--gap); margin-top: 2px; }
+
+@media (max-width: 720px) {
+  main { padding: 24px 16px 56px; gap: 28px; }
+  .kpis { grid-template-columns: 1fr 1fr; }
+  h1 { font-size: 24px; }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
