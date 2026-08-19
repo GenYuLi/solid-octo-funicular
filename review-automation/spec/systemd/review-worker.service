@@ -1,0 +1,9 @@
+# I2/I3: drains ALL pending jobs, debouncing per branch (newest HEAD wins).
+# `review-worker` binary is v0 coding deliverable #2; unit is in place first.
+[Unit]
+Description=Review pipeline worker (drain + debounce)
+
+[Service]
+Type=oneshot
+ExecStart=%h/.local/bin/review-worker --drain
+Nice=10

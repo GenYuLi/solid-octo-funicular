@@ -1,0 +1,60 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "tier1 issue brief",
+  "description": "B3 contract. Validator (C2) additionally checks: every span's file exists at `commit`; every cited sha exists in repo history; bug-kind briefs contain >=1 rank=primary AND >=1 rank=alternative hypothesis. Fail => retry once => degraded (C8).",
+  "type": "object",
+  "required": ["schema_version", "prompt_version", "commit", "classification", "hypotheses", "missing_info"],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": { "const": 1 },
+    "prompt_version": { "type": "string" },
+    "commit": { "type": "string", "pattern": "^[0-9a-f]{7,40}$" },
+    "classification": {
+      "type": "object",
+      "required": ["kind", "confidence"],
+      "additionalProperties": false,
+      "properties": {
+        "kind": { "enum": ["bug", "feature", "question", "config"] },
+        "confidence": { "enum": ["high", "med", "low"] }
+      }
+    },
+    "requirements": {
+      "type": "array",
+      "items": { "type": "object", "required": ["id", "text"], "additionalProperties": false,
+        "properties": { "id": { "type": "string", "pattern": "^R[0-9]+$" },
+                        "text": { "type": "string", "maxLength": 300 } } }
+    },
+    "hypotheses": { "type": "array", "items": { "$ref": "#/definitions/hypothesis" } },
+    "missing_info": { "type": "array", "items": { "type": "string", "maxLength": 200 } }
+  },
+  "definitions": {
+    "span": {
+      "type": "object",
+      "required": ["file", "start_line", "end_line"],
+      "additionalProperties": false,
+      "properties": {
+        "file": { "type": "string" },
+        "start_line": { "type": "integer", "minimum": 1 },
+        "end_line": { "type": "integer", "minimum": 1 },
+        "symbol": { "type": "string" }
+      }
+    },
+    "hypothesis": {
+      "type": "object",
+      "required": ["id", "rank", "text", "spans", "commits", "confidence"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string" },
+        "rank": { "enum": ["primary", "alternative"] },
+        "text": { "type": "string", "maxLength": 400 },
+        "spans": { "type": "array", "items": { "$ref": "#/definitions/span" } },
+        "commits": { "type": "array", "items": { "type": "string", "pattern": "^[0-9a-f]{7,40}$" } },
+        "confidence": { "enum": ["high", "med", "low"] }
+      },
+      "anyOf": [
+        { "properties": { "spans": { "minItems": 1 } }, "required": ["spans"] },
+        { "properties": { "commits": { "minItems": 1 } }, "required": ["commits"] }
+      ]
+    }
+  }
+}

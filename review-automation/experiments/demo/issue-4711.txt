@@ -1,0 +1,9 @@
+[PROJ-4711] Backtrace not captured even with RUST_LIB_BACKTRACE=1 after upgrade
+
+Since upgrading anyhow from 1.0.86 to 1.0.104, calling `downcast_ref` on an
+error chain still works, but the captured backtrace is empty when only
+RUST_LIB_BACKTRACE is set. Setting RUST_BACKTRACE=1 works. Our wrapper calls
+context() then walks the chain via Chain::next. Suspect something changed in
+src/backtrace.rs around the conditional capture logic.
+
+repro: set RUST_LIB_BACKTRACE=1, build with 1.0.104, print err.backtrace().

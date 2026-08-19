@@ -1,0 +1,39 @@
+# style.toml — S1 唯一資料源。CLAUDE.md 引用之(模型「知道」);lint S2 與 editor S3 消費之(系統「強制」)。
+schema_version = 1
+
+[script]
+# S2:白名單外的 Unicode script 直接 fail(攔「защ辯護」類跨語系漏字)。零 LLM 成本、零誤放。
+allowed = ["Han", "Latin", "Common"]   # Common 含標點與數字
+
+[terms]
+# S4:rewrite 時受保護的術語;editor 規則:不確定就保留原文。
+allowlist = [
+  "invariant", "span", "claim", "dossier", "worktree", "backend", "hook",
+  "queue", "debounce", "budget", "lint", "commit", "diff", "blast radius",
+]
+
+[banned]
+# 爛詞 → 替換。標 "warn" 的由 editor 視語境處理,其餘 lint 可機械修。
+"用戶" = "使用者"
+"信息" = "訊息"
+"質量" = "品質"
+
+[tone]
+rules = [
+  "禁「不是 X,而是 Y」修辭,除非在糾正對方明確表達過的誤解",
+  "答案先行:結論出現在前 90 秒的閱讀量內",
+  "prose hard-wrap 100 欄;禁超寬 markdown 表格,超過就改 list(G2 補充條款)",
+  "行話 / 縮寫首次出現必須一句話定義,否則換白話(讀者需要問意思 = 詞失職)",
+]
+
+# ---- S8 名人堂:真實惹怒樣本。bad 原句 / why 病理 / good 改寫。editor few-shot 直接吃這段。----
+
+[[fewshot]]
+bad  = "你必須能защ辯護的點"
+why  = "跨 script 漏字(Cyrillic 混入)+ defensible points 的 calque"
+good = "你要能替這個選擇辯護"
+
+[[fewshot]]
+bad  = "每條問自己:我願意照這條活嗎?"
+why  = "live by this rule 的直譯 calque"
+good = "每條問自己:這條我買單嗎?"

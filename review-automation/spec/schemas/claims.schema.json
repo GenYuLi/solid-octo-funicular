@@ -1,0 +1,67 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "tier1 dossier claims",
+  "description": "C1: every human-facing claim carries spans. C3: LLM points, never copies code. Validator (C2) additionally checks: span exists at `commit`, mentioned symbol appears inside span; fail => retry once => drop + degraded stats (C8).",
+  "type": "object",
+  "required": ["schema_version", "prompt_version", "commit", "requirements", "claims"],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": { "const": 1 },
+    "prompt_version": { "type": "string" },
+    "commit": { "type": "string", "pattern": "^[0-9a-f]{7,40}$" },
+    "requirements": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "text"],
+        "additionalProperties": false,
+        "properties": {
+          "id": { "type": "string", "pattern": "^R[0-9]+$" },
+          "text": { "type": "string", "maxLength": 300 }
+        }
+      }
+    },
+    "claims": { "type": "array", "items": { "$ref": "#/definitions/claim" } }
+  },
+  "definitions": {
+    "span": {
+      "type": "object",
+      "required": ["file", "start_line", "end_line"],
+      "additionalProperties": false,
+      "properties": {
+        "file": { "type": "string" },
+        "start_line": { "type": "integer", "minimum": 1 },
+        "end_line": { "type": "integer", "minimum": 1 },
+        "symbol": { "type": "string" }
+      }
+    },
+    "claim": {
+      "type": "object",
+      "required": ["id", "kind", "text", "spans", "confidence"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string" },
+        "kind": { "enum": ["req_impl", "risk", "scope_creep", "test_weakening", "gap"] },
+        "requirement_id": { "type": "string" },
+        "text": { "type": "string", "maxLength": 400, "description": "prose only - never code bodies (C3); passes style lint (C9)" },
+        "spans": { "type": "array", "items": { "$ref": "#/definitions/span" } },
+        "risk_tags": {
+          "type": "array",
+          "items": { "enum": ["unsafe", "lock_atomic", "error_path", "api_surface", "serde_config", "duplication"] }
+        },
+        "confidence": { "enum": ["high", "med", "low"] }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "kind": { "const": "gap" } } },
+          "then": { "properties": { "spans": { "maxItems": 0 } } },
+          "else": { "properties": { "spans": { "minItems": 1 } } }
+        },
+        {
+          "if": { "properties": { "kind": { "enum": ["req_impl", "gap"] } } },
+          "then": { "required": ["requirement_id"] }
+        }
+      ]
+    }
+  }
+}

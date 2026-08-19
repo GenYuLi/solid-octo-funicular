@@ -1,0 +1,22 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "review-queue job spec",
+  "description": "I1: written atomically (tmp+rename) into $XDG_STATE_HOME/review-queue by hooks / pre-push / manual. Worker drains, debounces per branch (I3).",
+  "type": "object",
+  "required": ["version", "type", "repo", "branch", "trigger", "created_at"],
+  "additionalProperties": false,
+  "properties": {
+    "version": { "const": 1 },
+    "type": { "enum": ["dossier"] },
+    "repo": { "type": "string", "description": "absolute path to repo root" },
+    "branch": { "type": "string" },
+    "base": { "type": "string", "description": "optional; worker auto-detects merge-base when absent (A1)" },
+    "issue_refs": {
+      "type": "array", "items": { "type": "string" },
+      "description": "from branch naming fix/ISSUE-123 (Q2 decision) or ledger; empty => degraded pure-diff dossier (A1)"
+    },
+    "trigger": { "enum": ["session_end", "pre_push", "manual"] },
+    "session_id": { "type": "string" },
+    "created_at": { "type": "string", "format": "date-time" }
+  }
+}

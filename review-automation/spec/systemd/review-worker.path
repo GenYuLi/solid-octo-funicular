@@ -1,0 +1,11 @@
+# I2: watch the queue dir; activates review-worker.service when jobs land.
+# install: ~/.config/systemd/user/ ; systemctl --user enable --now review-worker.path
+[Unit]
+Description=Watch review queue for job specs
+
+[Path]
+DirectoryNotEmpty=%S/review-queue
+MakeDirectory=yes
+
+[Install]
+WantedBy=default.target

@@ -1,0 +1,10 @@
+{
+  "_note": "merge into .claude/settings.json - L1/L4. Field names to be checked against official hooks docs before merging (do not trust from memory).",
+  "hooks": {
+    "SessionEnd": [
+      { "hooks": [ { "type": "command",
+                     "command": "~/.local/bin/enqueue-session.sh",
+                     "timeout": 5 } ] }
+    ]
+  }
+}

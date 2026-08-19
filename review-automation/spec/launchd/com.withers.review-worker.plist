@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
+ "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!-- I2/I14 macOS adapter. launchd 不展開 ~,路徑須絕對;USER 換成實際帳號。
+     install: cp -> ~/Library/LaunchAgents/ ; launchctl load <plist>
+     欄位名以 `man launchd.plist` 校對後再用(不憑記憶信)。 -->
+<plist version="1.0">
+<dict>
+  <key>Label</key><string>com.withers.review-worker</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>/Users/USER/.local/bin/review-worker</string>
+    <string>--drain</string>
+  </array>
+  <key>WatchPaths</key>
+  <array>
+    <string>/Users/USER/.local/state/review-queue</string>
+  </array>
+  <key>RunAtLoad</key><false/>
+  <key>StandardErrorPath</key><string>/tmp/review-worker.err</string>
+</dict>
+</plist>
