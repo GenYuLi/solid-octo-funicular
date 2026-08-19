@@ -34,7 +34,7 @@ status = "next"
 hours = 2
 covers = ["L1", "I1", "A8"]
 depends = []
-issue = 0
+issue = 1
 note = "先對官方 hooks docs 校對 settings fragment 欄位名,再裝 ~/.local/bin + 併 ~/.claude/settings.json;沒 worker 也無害,queue 積壓就是 W2 測資。"
 
 [[work]]
@@ -44,7 +44,7 @@ status = "todo"
 hours = 1
 covers = ["A8"]
 depends = ["W0"]
-issue = 0
+issue = 2
 new = true
 note = "spec 包只有 SessionEnd hook;A8 v0 明寫 pre-push 也走本地 worker。git pre-push hook 寫 trigger=pre_push job,可用 core.hooksPath 全域裝。"
 
@@ -55,7 +55,7 @@ status = "todo"
 hours = 12
 covers = ["I2", "I3", "I9", "P1"]
 depends = ["W0"]
-issue = 0
+issue = 3
 note = "Cargo workspace、--drain 讀 queue、per-branch debounce(最新 HEAD 勝)、併發=1 + 一鍵暫停(I9)、每 job 一行 log;systemd units 在 host 實驗;NOW.md worktree 表由它產。"
 
 [[work]]
@@ -65,7 +65,7 @@ status = "todo"
 hours = 20
 covers = ["A1", "A2", "C4", "C5"]
 depends = ["W2"]
-issue = 0
+issue = 4
 note = "v0 最難的 deterministic 部分,目前零原型(experiments/triage.py 是 B 線的 issue triage,不是這個)。merge-base 自動偵測、cache key = commit。Rust 先行。"
 
 [[work]]
@@ -75,7 +75,7 @@ status = "todo"
 hours = 16
 covers = ["I7", "I5", "C1", "C2", "C5", "C6", "A3", "A4", "C8"]
 depends = ["W3"]
-issue = 0
+issue = 5
 note = "先查 claude -p 官方 flags(Q6 留的尾巴:--output-format、--model、schema 強制)。I7 trait 一個 impl;C2 validator:span 存在、symbol 在 span 內、retry 一次、degraded 統計;A4 risk 規則表資料化成檔案(目前只有 schema enum)。"
 
 [[work]]
@@ -85,7 +85,7 @@ status = "todo"
 hours = 10
 covers = ["S2", "S5", "C9"]
 depends = ["W2"]
-issue = 0
+issue = 6
 note = "README 有列、NOW.md task 列表漏了。Unicode script 白名單掃描、OpenCC s2twp diff、banned map;只過 JSON 的 prose 欄位。"
 
 [[work]]
@@ -95,7 +95,7 @@ status = "todo"
 hours = 16
 covers = ["A7", "A9", "A3", "C3", "C8", "D1", "D4"]
 depends = ["W4", "W5"]
-issue = 0
+issue = 7
 note = "Gruvbox dark 單檔;code 從真實 checkout 取(C3);A9 素樸 LOC 預算警告;notify-send / osascript adapter,degraded 同通道可辨。"
 
 [[work]]
@@ -105,7 +105,7 @@ status = "todo"
 hours = 6
 covers = ["L2", "A1"]
 depends = ["W0"]
-issue = 0
+issue = 8
 new = true
 note = "v0 範圍但 spec 包沒寫:hook 只寫 job spec,沒人產 intent / 聲稱 invariant / touched files / tests。來源待定(SessionEnd 是否拿得到 transcript 路徑),先補一節 spec 再做。"
 
@@ -116,7 +116,7 @@ status = "todo"
 hours = 3
 covers = ["G1", "G2"]
 depends = []
-issue = 0
+issue = 9
 new = true
 note = "CLAUDE.md 只讓模型「知道」;G1/G2 各要一個 hook 當 floor(commit-msg / 行數、doc 行數 lint)。"
 
@@ -127,7 +127,7 @@ status = "todo"
 hours = 2
 covers = ["P2", "U2", "K1"]
 depends = []
-issue = 0
+issue = 10
 new = true
 note = "docs/decisions.md 建檔並 seed Q1/Q2/Q3/Q6;docs/failure-map.md 模板(你寫、我驗);CLAUDE.md 補 K1(task-blocking 答案 ≤ 10 行)。"
 
@@ -138,7 +138,7 @@ status = "deferred"
 hours = 10
 covers = []
 depends = []
-issue = 0
+issue = 11
 note = "原 NOW.md task 1;本板的 gen_status.py 是它的種子。建議排在 W6 之後(D2)。"
 
 [[work]]
@@ -148,7 +148,7 @@ status = "deferred"
 hours = 8
 covers = []
 depends = ["W6"]
-issue = 0
+issue = 12
 note = "原 NOW.md task 3;I15/D7 屬 v1。"
 
 # ---- v0 需求覆蓋(35 條 + 11 條政策)。evidence = repo 路徑;gap = 還缺什麼 ----
