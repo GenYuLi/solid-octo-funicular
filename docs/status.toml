@@ -19,7 +19,7 @@ bites = "決定 W2–W6 誰動手;也決定下方人時欄怎麼讀。"
 [[decision]]
 id = "D2"
 text = "task 順序:rows-as-data generator(W10)排到 worker 之後?"
-bites = "它不在 v0 閉環關鍵路徑上;剩餘 46 天只夠 v0。"
+bites = "它不在 v0 閉環關鍵路徑上;剩餘時間只夠 v0(見上方倒數)。"
 
 [[decision]]
 id = "D3"
