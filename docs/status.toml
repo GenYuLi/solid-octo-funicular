@@ -3,7 +3,7 @@
 # 狀態詞彙(req.status):delivered(repo 有且驗過)/ spec-only(合約在、跑不起來)/
 # planned(有工作項認領、尚無實物)/ gap(spec 包交付時無人認領,本板新增工作項)/ policy。
 schema_version = 1
-as_of = "2026-08-20"
+as_of = "2026-08-28"
 deadline = "2026-10-05"     # C15 build window
 source = "docs/requirements-v1.6.html"
 north_star = "入職 Etched 後常態週工時中位數 ≤ 8 小時/天;系統產品是 attention allocation。"
@@ -23,8 +23,8 @@ bites = "它不在 v0 閉環關鍵路徑上;剩餘 46 天只夠 v0。"
 
 [[decision]]
 id = "D3"
-text = "C15 的「v1 核心」指哪些 ID?建議 = I14(macOS 跑得起來)+ B2(Tier 0 triage 收編,已有原型),其餘 v1 入職後按 C14 解鎖。"
-bites = "沒定義就無法判斷 10-05 前算不算達標;估時顯示 v0 本身已吃掉全部剩餘時間。"
+text = "C15 的「v1 核心」指哪些 ID?建議 = I14(macOS 跑得起來)+ B2(Tier 0 triage 收編,已有原型)+ W12(C++/Python 語言包,2026-08-28 新增),其餘 v1 入職後按 C14 解鎖。"
+bites = "v0 88 h + W12 16 h = 104 h,對上剩餘 38 天的 81–108 h(15–20 h/週)——只有頂緣塞得下;D1 若由 Claude 實作才有餘裕。"
 
 # ---- 工作項(W):v0 閉環的施工順序。issue = GitHub issue 編號,0 = 尚未開 ----
 [[work]]
@@ -66,7 +66,7 @@ hours = 20
 covers = ["A1", "A2", "C4", "C5"]
 depends = ["W2"]
 issue = 4
-note = "v0 最難的 deterministic 部分,目前零原型(experiments/triage.py 是 B 線的 issue triage,不是這個)。merge-base 自動偵測、cache key = commit。Rust 先行。"
+note = "v0 最難的 deterministic 部分,目前零原型(experiments/triage.py 是 B 線的 issue triage,不是這個)。merge-base 自動偵測、cache key = commit。設計成 language adapter(trait + 各語言語法節點表):Rust 第一個 impl,W12 加語言不動核心。"
 
 [[work]]
 id = "W4"
@@ -76,7 +76,7 @@ hours = 16
 covers = ["I7", "I5", "C1", "C2", "C5", "C6", "A3", "A4", "C8"]
 depends = ["W3"]
 issue = 5
-note = "先查 claude -p 官方 flags(Q6 留的尾巴:--output-format、--model、schema 強制)。I7 trait 一個 impl;C2 validator:span 存在、symbol 在 span 內、retry 一次、degraded 統計;A4 risk 規則表資料化成檔案(目前只有 schema enum)。"
+note = "先查 claude -p 官方 flags(Q6 留的尾巴:--output-format、--model、schema 強制)。I7 trait 一個 impl;C2 validator:span 存在、symbol 在 span 內、retry 一次、degraded 統計;A4 risk 規則表資料化成檔案(目前只有 schema enum);表分語言段,C++/Py 條目歸 W12。"
 
 [[work]]
 id = "W5"
@@ -150,6 +150,16 @@ covers = []
 depends = ["W6"]
 issue = 12
 note = "原 NOW.md task 3;I15/D7 屬 v1。"
+
+[[work]]
+id = "W12"
+title = "語言包:C++ + Python/Bazel(Tier 0 symbol + per-language risk 規則)"
+status = "v1"
+hours = 16
+covers = []
+depends = ["W3", "W4"]
+issue = 13
+note = "Withers 2026-08-28 新增範圍:分析對象加 C++(標準 = quant / Google infra / NVIDIA / Linux 級:UB/lifetime、memory order、hot-path 配置、ABI/ODR、error path、narrowing)與 Python(重點 Bazel tests——A5 test-weakening 的 Python 先行切片:assertion 放寬、skip/xfail、mock 範圍、BUILD target/deps 變更)。W3 的 language adapter 各加一個 impl;C++ caller/callee 無 indexer 只能 name-based 啟發式,邊標 heuristic(精確跳轉留 Q5 SCIP);BUILD/*.bzl 納入 diff 掃描;risk_tags enum 擴充須 bump schema+prompt 版本(I5)。worker 本身仍是 Rust(Q3 不變)。"
 
 # ---- v0 需求覆蓋(35 條 + 11 條政策)。evidence = repo 路徑;gap = 還缺什麼 ----
 [[req]]
