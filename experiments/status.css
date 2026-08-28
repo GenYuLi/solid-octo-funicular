@@ -52,7 +52,7 @@ h2 { margin: 0 0 14px; }
         padding: 1px 8px; border-radius: 3px; border: 1px solid; white-space: nowrap; }
 .pill-delivered, .pill-w-done { color: var(--ok); border-color: #a9b66599; background: #a9b66518; }
 .pill-spec-only, .pill-w-doing { color: var(--warn); border-color: #d8a65799; background: #d8a65718; }
-.pill-planned { color: var(--plan); border-color: #7daea399; background: #7daea318; }
+.pill-planned, .pill-w-v1 { color: var(--plan); border-color: #7daea399; background: #7daea318; }
 .pill-gap { color: var(--gap); border-color: #ea696299; background: #ea696218; }
 .pill-policy, .pill-w-todo, .pill-w-deferred { color: var(--pol); border-color: #92837499; background: #92837414; }
 .pill-w-next { color: var(--next); border-color: #d3869b99; background: #d3869b18; }

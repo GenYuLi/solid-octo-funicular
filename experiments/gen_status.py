@@ -13,7 +13,7 @@ STATUS_ORDER = ["gap", "spec-only", "planned", "delivered", "policy"]
 STATUS_LABEL = {"gap": "缺口", "spec-only": "合約在", "planned": "已認領",
                 "delivered": "已交付", "policy": "政策"}
 WORK_LABEL = {"next": "下一步", "todo": "待做", "doing": "進行中",
-              "done": "完成", "deferred": "延後"}
+              "done": "完成", "deferred": "延後", "v1": "v1 核心(提案)"}
 REPO_ISSUES = "https://github.com/GenYuLi/solid-octo-funicular/issues/"
 
 def esc(s):
@@ -51,14 +51,17 @@ def render_kpis(d):
     as_of = datetime.date.fromisoformat(d["as_of"])
     deadline = datetime.date.fromisoformat(d["deadline"])
     days = (deadline - as_of).days
-    active = [w for w in d["work"] if w["status"] != "deferred"]
-    hours = sum(w["hours"] for w in active)
+    v0 = [w for w in d["work"] if w["status"] not in ("deferred", "v1")]
+    v1h = sum(w["hours"] for w in d["work"] if w["status"] == "v1")
+    hours = sum(w["hours"] for w in v0)
     gaps = sum(1 for r in d["req"] if r["status"] == "gap")
     gap_notes = sum(1 for r in d["req"] if r.get("gap"))
+    hours_num = f"{hours}<small>+{v1h}</small>" if v1h else str(hours)
+    hours_label = "人時(v0 + v1 核心提案)" if v1h else "人時(v0 非延後項)"
     tiles = [
         (f'<span id="days-left">{days}</span>', "天到 2026-10-05", "C15 build window"),
-        (str(hours), "人時(v0 非延後項)", f"≈ {hours/20:.1f}–{hours/15:.1f} 週 @ 15–20 h/週"),
-        (f"{len(active)}<small>+{len(d['work'])-len(active)}</small>", "工作項(+延後)",
+        (hours_num, hours_label, f"v0 ≈ {hours/20:.1f}–{hours/15:.1f} 週 @ 15–20 h/週"),
+        (f"{len(v0)}<small>+{len(d['work'])-len(v0)}</small>", "工作項(+延後·v1)",
          "W0 為下一步"),
         (f"{gaps}<small>/{gap_notes}</small>", "無人認領 / 缺口備註",
          "交付時漏掉的 v0 條目 / 帶缺口註記的條目"),
